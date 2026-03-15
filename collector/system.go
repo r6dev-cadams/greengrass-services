@@ -28,6 +28,12 @@ type ReportCenterPayload struct {
 	ReportStatusColor string `json:"reportStatusColor"`
 }
 
+// ReportDataPayload is published to greengrass/device/reportdatawarn or reportdataerr.
+type ReportDataPayload struct {
+	DeviceID string `json:"deviceId"`
+	Content  string `json:"content"`
+}
+
 // WifiAddrPayload is published to greengrass/device/wifiaddr.
 type WifiAddrPayload struct {
 	DeviceID string `json:"device_id"`
@@ -72,21 +78,68 @@ func New(nodeID string) *Collector {
 	return &Collector{nodeID: nodeID}
 }
 
-// CollectStatus returns the device health status.
-// Currently always Healthy; extend with real health checks as needed.
-func (c *Collector) CollectStatus() *StatusPayload {
-	return &StatusPayload{
-		DeviceID: c.nodeID,
-		State:    "Healthy",
+// hcDataDir is the directory where health-check marker files are written.
+const hcDataDir = "/opt/carbon/_hcdataMqtt"
+
+// getHealthState reads /opt/carbon/_hcdataMqtt for 2_Warning and 3_Error
+// marker files and returns the current health state, exactly matching the
+// Python script logic.
+func getHealthState() (state, reportStatus, reportStatusColor string) {
+	hasError := fileExists(hcDataDir + "/3_Error")
+	hasWarning := fileExists(hcDataDir + "/2_Warning")
+
+	switch {
+	case hasError:
+		return "Unhealthy", "Report", "red"
+	case hasWarning:
+		return "Warning", "Report", "yellow"
+	default:
+		return "Healthy", "NoReport", "green"
 	}
 }
 
-// CollectReportCenter returns report center status.
+// CollectStatus returns the device health status based on marker files.
+func (c *Collector) CollectStatus() *StatusPayload {
+	state, _, _ := getHealthState()
+	return &StatusPayload{
+		DeviceID: c.nodeID,
+		State:    state,
+	}
+}
+
+// CollectReportCenter returns report center status based on marker files.
 func (c *Collector) CollectReportCenter() *ReportCenterPayload {
+	_, reportStatus, color := getHealthState()
 	return &ReportCenterPayload{
 		DeviceID:          c.nodeID,
-		ReportStatus:      "NoReport",
-		ReportStatusColor: "green",
+		ReportStatus:      reportStatus,
+		ReportStatusColor: color,
+	}
+}
+
+// CollectReportDataWarn returns the warning report data, or nil if no warning file exists.
+func (c *Collector) CollectReportDataWarn() *ReportDataPayload {
+	path := hcDataDir + "/2_Warning"
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	return &ReportDataPayload{
+		DeviceID: c.nodeID,
+		Content:  strings.TrimSpace(string(data)),
+	}
+}
+
+// CollectReportDataErr returns the error report data, or nil if no error file exists.
+func (c *Collector) CollectReportDataErr() *ReportDataPayload {
+	path := hcDataDir + "/3_Error"
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	return &ReportDataPayload{
+		DeviceID: c.nodeID,
+		Content:  strings.TrimSpace(string(data)),
 	}
 }
 
@@ -319,6 +372,11 @@ func getMeshInfo() (string, []string) {
 }
 
 // ──── Utility ───────────────────────────────────────────────────────────────
+
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
 
 func round1(f float64) float64 {
 	return float64(int(f*10+0.5)) / 10

@@ -121,5 +121,19 @@ func publishAll(coll *collector.Collector, mqttClient *mqtt.Client) {
 		slog.Error("publish sysinfo failed", "error", err)
 	}
 
+	// 5) Report data (warning file contents, if present)
+	if warnData := coll.CollectReportDataWarn(); warnData != nil {
+		if err := mqttClient.PublishJSON("greengrass/device/reportdatawarn", warnData); err != nil {
+			slog.Error("publish reportdatawarn failed", "error", err)
+		}
+	}
+
+	// 6) Report data (error file contents, if present)
+	if errData := coll.CollectReportDataErr(); errData != nil {
+		if err := mqttClient.PublishJSON("greengrass/device/reportdataerr", errData); err != nil {
+			slog.Error("publish reportdataerr failed", "error", err)
+		}
+	}
+
 	slog.Debug("published all health data", "nodeId", coll.CollectStatus().DeviceID)
 }
