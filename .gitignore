@@ -1,5 +1,7 @@
 # Compiled binaries
 health-check
+health-check-arm
+health-check-arm64
 health-check-amd64
 *.exe
 
