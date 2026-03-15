@@ -200,8 +200,12 @@ func getCPUSerial() string {
 }
 
 // getCPUHardware reads the hardware field from /proc/cpuinfo.
+// RPi 5 dropped "Hardware" in favour of "Model", so we fall back.
 func getCPUHardware() string {
-	return parseCPUInfo("Hardware")
+	if hw := parseCPUInfo("Hardware"); hw != "unknown" {
+		return hw
+	}
+	return parseCPUInfo("Model")
 }
 
 // getCPURevision reads the revision from /proc/cpuinfo.
