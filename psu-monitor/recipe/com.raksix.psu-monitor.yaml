@@ -1,0 +1,93 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: com.raksix.psu-monitor
+ComponentVersion: "1.0.0"
+ComponentDescription: >
+  PSU monitoring service for Dell R420 servers. Connects to iDRAC via Redfish
+  over eth0, monitors PSU health every second, and publishes status via MQTT.
+  Deployed only to nodes with iDRAC connectivity (e.g., Node10b).
+ComponentPublisher: Raksix
+ComponentConfiguration:
+  DefaultConfiguration:
+    NodeID: ""
+    ServerID: ""
+    IDRACHost: "192.168.99.100"
+    IDRACPort: "443"
+    IDRACUsername: "root"
+    IDRACPassword: "@irswift11!"
+    MQTTBroker: "b-39377c99-a393-42a9-bf96-49810e3f9bbb-1.mq.us-east-1.amazonaws.com"
+    MQTTPort: "8883"
+    MQTTUsername: "carbonite"
+    MQTTPassword: "AirswiftAirswift11!"
+    PollInterval: "1"
+    LogLevel: "info"
+Manifests:
+  - Platform:
+      os: linux
+      architecture: arm
+    Lifecycle:
+      install: "chmod +x {artifacts:path}/psu-monitor-arm"
+      run:
+        script: |
+          export NODE_ID="{configuration:/NodeID}"
+          export SERVER_ID="{configuration:/ServerID}"
+          export IDRAC_HOST="{configuration:/IDRACHost}"
+          export IDRAC_PORT="{configuration:/IDRACPort}"
+          export IDRAC_USERNAME="{configuration:/IDRACUsername}"
+          export IDRAC_PASSWORD="{configuration:/IDRACPassword}"
+          export MQTT_BROKER="{configuration:/MQTTBroker}"
+          export MQTT_PORT="{configuration:/MQTTPort}"
+          export MQTT_USERNAME="{configuration:/MQTTUsername}"
+          export MQTT_PASSWORD="{configuration:/MQTTPassword}"
+          export POLL_INTERVAL="{configuration:/PollInterval}"
+          export LOG_LEVEL="{configuration:/LogLevel}"
+          {artifacts:path}/psu-monitor-arm
+        RequiresPrivilege: false
+    Artifacts:
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.psu-monitor/1.0.0/psu-monitor-arm"
+  - Platform:
+      os: linux
+      architecture: amd64
+    Lifecycle:
+      install: "chmod +x {artifacts:path}/psu-monitor-amd64"
+      run:
+        script: |
+          export NODE_ID="{configuration:/NodeID}"
+          export SERVER_ID="{configuration:/ServerID}"
+          export IDRAC_HOST="{configuration:/IDRACHost}"
+          export IDRAC_PORT="{configuration:/IDRACPort}"
+          export IDRAC_USERNAME="{configuration:/IDRACUsername}"
+          export IDRAC_PASSWORD="{configuration:/IDRACPassword}"
+          export MQTT_BROKER="{configuration:/MQTTBroker}"
+          export MQTT_PORT="{configuration:/MQTTPort}"
+          export MQTT_USERNAME="{configuration:/MQTTUsername}"
+          export MQTT_PASSWORD="{configuration:/MQTTPassword}"
+          export POLL_INTERVAL="{configuration:/PollInterval}"
+          export LOG_LEVEL="{configuration:/LogLevel}"
+          {artifacts:path}/psu-monitor-amd64
+        RequiresPrivilege: false
+    Artifacts:
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.psu-monitor/1.0.0/psu-monitor-amd64"
+  - Platform:
+      os: linux
+      architecture: aarch64
+    Lifecycle:
+      install: "chmod +x {artifacts:path}/psu-monitor-arm64"
+      run:
+        script: |
+          export NODE_ID="{configuration:/NodeID}"
+          export SERVER_ID="{configuration:/ServerID}"
+          export IDRAC_HOST="{configuration:/IDRACHost}"
+          export IDRAC_PORT="{configuration:/IDRACPort}"
+          export IDRAC_USERNAME="{configuration:/IDRACUsername}"
+          export IDRAC_PASSWORD="{configuration:/IDRACPassword}"
+          export MQTT_BROKER="{configuration:/MQTTBroker}"
+          export MQTT_PORT="{configuration:/MQTTPort}"
+          export MQTT_USERNAME="{configuration:/MQTTUsername}"
+          export MQTT_PASSWORD="{configuration:/MQTTPassword}"
+          export POLL_INTERVAL="{configuration:/PollInterval}"
+          export LOG_LEVEL="{configuration:/LogLevel}"
+          {artifacts:path}/psu-monitor-arm64
+        RequiresPrivilege: false
+    Artifacts:
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.psu-monitor/1.0.0/psu-monitor-arm64"

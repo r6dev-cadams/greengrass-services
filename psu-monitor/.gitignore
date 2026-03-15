@@ -1,0 +1,19 @@
+# Compiled binaries
+psu-monitor
+psu-monitor-arm
+psu-monitor-arm64
+psu-monitor-amd64
+*.exe
+
+# Go build cache
+vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
