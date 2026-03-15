@@ -1,12 +1,12 @@
 ---
 RecipeFormatVersion: "2020-01-25"
-ComponentName: com.skybase.health-check
+ComponentName: com.raksix.health-check
 ComponentVersion: "1.0.1"
 ComponentDescription: >
   Node health-check service. Collects OS info, CPU temp, memory, disk usage,
   mesh/network status, and publishes to MQTT every 5 seconds.
   Replaces the legacy Python com.example.MqttHealthCheckStatus component.
-ComponentPublisher: SkyBase
+ComponentPublisher: Raksix
 ComponentConfiguration:
   DefaultConfiguration:
     NodeID: ""
@@ -34,7 +34,7 @@ Manifests:
           {artifacts:path}/health-check
         RequiresPrivilege: false
     Artifacts:
-      - URI: "s3://skybase-greengrass-artifacts/com.skybase.health-check/1.0.1/health-check-arm"
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.health-check/1.0.1/health-check-arm"
   - Platform:
       os: linux
       architecture: amd64
@@ -52,7 +52,7 @@ Manifests:
           {artifacts:path}/health-check-amd64
         RequiresPrivilege: false
     Artifacts:
-      - URI: "s3://skybase-greengrass-artifacts/com.skybase.health-check/1.0.1/health-check-amd64"
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.health-check/1.0.1/health-check-amd64"
   - Platform:
       os: linux
       architecture: aarch64
@@ -70,4 +70,4 @@ Manifests:
           {artifacts:path}/health-check-arm64
         RequiresPrivilege: false
     Artifacts:
-      - URI: "s3://skybase-greengrass-artifacts/com.skybase.health-check/1.0.1/health-check-arm64"
+      - URI: "s3://skybase-greengrass-artifacts/com.raksix.health-check/1.0.1/health-check-arm64"
