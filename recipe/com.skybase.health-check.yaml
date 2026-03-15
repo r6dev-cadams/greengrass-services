@@ -1,0 +1,55 @@
+---
+RecipeFormatVersion: "2020-01-25"
+ComponentName: com.skybase.health-check
+ComponentVersion: "1.0.0"
+ComponentDescription: >
+  Node health-check service. Collects OS info, CPU temp, memory, disk usage,
+  mesh/network status, and publishes to MQTT every 5 seconds.
+  Replaces the legacy Python com.example.MqttHealthCheckStatus component.
+ComponentPublisher: SkyBase
+ComponentConfiguration:
+  DefaultConfiguration:
+    NodeID: ""
+    MQTTBroker: "b-39377c99-a393-42a9-bf96-49810e3f9bbb-1.mq.us-east-1.amazonaws.com"
+    MQTTPort: "8883"
+    MQTTUsername: "carbonite"
+    MQTTPassword: "AirswiftAirswift11!"
+    PublishInterval: "5"
+    LogLevel: "info"
+Manifests:
+  - Platform:
+      os: linux
+      architecture: arm
+    Lifecycle:
+      install: "chmod +x {artifacts:path}/health-check"
+      run:
+        script: |
+          export NODE_ID="{configuration:/NodeID}"
+          export MQTT_BROKER="{configuration:/MQTTBroker}"
+          export MQTT_PORT="{configuration:/MQTTPort}"
+          export MQTT_USERNAME="{configuration:/MQTTUsername}"
+          export MQTT_PASSWORD="{configuration:/MQTTPassword}"
+          export PUBLISH_INTERVAL="{configuration:/PublishInterval}"
+          export LOG_LEVEL="{configuration:/LogLevel}"
+          {artifacts:path}/health-check
+        RequiresPrivilege: false
+    Artifacts:
+      - URI: "s3://skybase-greengrass-artifacts/health-check/1.0.0/health-check"
+  - Platform:
+      os: linux
+      architecture: amd64
+    Lifecycle:
+      install: "chmod +x {artifacts:path}/health-check"
+      run:
+        script: |
+          export NODE_ID="{configuration:/NodeID}"
+          export MQTT_BROKER="{configuration:/MQTTBroker}"
+          export MQTT_PORT="{configuration:/MQTTPort}"
+          export MQTT_USERNAME="{configuration:/MQTTUsername}"
+          export MQTT_PASSWORD="{configuration:/MQTTPassword}"
+          export PUBLISH_INTERVAL="{configuration:/PublishInterval}"
+          export LOG_LEVEL="{configuration:/LogLevel}"
+          {artifacts:path}/health-check
+        RequiresPrivilege: false
+    Artifacts:
+      - URI: "s3://skybase-greengrass-artifacts/health-check/1.0.0/health-check-amd64"
